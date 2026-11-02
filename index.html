@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Номери запитань за варіантом</title>
+<style>
+  :root {
+    --bg: #fbfbf8;
+    --text: #1d2433;
+    --muted: #6b7280;
+    --line: #dcdfe5;
+    --accent: #2f5bd3;
+    --error: #b42318;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15181e;
+      --text: #e6e8ec;
+      --muted: #9aa1ad;
+      --line: #2c313b;
+      --accent: #8aa8ff;
+      --error: #ff8a80;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.5 Georgia, "Times New Roman", serif;
+  }
+  main {
+    max-width: 26rem;
+    margin: 0 auto;
+    padding: 3rem 1.25rem;
+  }
+  h1 { font-size: 1.4rem; font-weight: normal; margin: 0 0 1.5rem; }
+  label { display: block; color: var(--muted); margin-bottom: .4rem; }
+  input {
+    width: 100%;
+    font: inherit;
+    font-size: 2rem;
+    padding: .3rem .6rem;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .error { color: var(--error); min-height: 1.5em; margin: .4rem 0 1rem; font-size: .95rem; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: .7rem 0; border-top: 1px solid var(--line); }
+  td.tasks {
+    text-align: right;
+    font-size: 1.4rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+  }
+  footer { margin-top: 2rem; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Номери запитань за варіантом</h1>
+
+  <label for="k">Номер варіанту (1–100)</label>
+  <input id="k" type="number" inputmode="numeric" min="1" max="100" step="1" autofocus>
+  <p class="error" id="error" role="alert"></p>
+
+  <table aria-live="polite">
+    <tr><td>Nivel 1</td><td class="tasks" id="n1">–</td></tr>
+    <tr><td>Nivel 2</td><td class="tasks" id="n2">–</td></tr>
+    <tr><td>Nivel 3</td><td class="tasks" id="n3">–</td></tr>
+    <tr><td>Nivel 4</td><td class="tasks" id="n4">–</td></tr>
+  </table>
+
+  <footer>a mod* b — залишок від ділення a на b, але якщо він дорівнює 0, то результат b.</footer>
+</main>
+
+<script>
+  function modStar(a, b) {
+    const r = a % b;
+    return r === 0 ? b : r;
+  }
+
+  const input = document.getElementById("k");
+  const error = document.getElementById("error");
+  const out = ["n1", "n2", "n3", "n4"].map(id => document.getElementById(id));
+
+  function show(values) {
+    values.forEach((v, i) => { out[i].textContent = v; });
+  }
+
+  function update() {
+    const raw = input.value.trim();
+    if (raw === "") { error.textContent = ""; show(["–", "–", "–", "–"]); return; }
+
+    const k = Number(raw);
+    if (!Number.isInteger(k) || k < 1 || k > 100) {
+      error.textContent = "Введіть ціле число від 1 до 100.";
+      show(["–", "–", "–", "–"]);
+      return;
+    }
+
+    error.textContent = "";
+    show([
+      modStar(k, 23) + ", " + modStar(k + 12, 23),
+      modStar(k, 9) + ", " + modStar(k + 5, 9),
+      modStar(k, 7),
+      modStar(k, 4)
+    ]);
+  }
+
+  input.addEventListener("input", update);
+</script>
+</body>
+</html>
